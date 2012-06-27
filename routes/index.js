@@ -1,5 +1,14 @@
-var key = 'f5cc57b57ac94d5581f33e937dd9103e';
-var secret = '8d9fb8d44daf4101ac80dbdf51f8b178';
+var key, secret;
+
+if(process.env.NODE_ENV == 'production') {
+  key =     'd0e46779f2af43b6a3f17d86c50255ca';
+  secret =  '6d3e04826f1845888469dfee4fd145a8';
+} else {
+  key =     'f5cc57b57ac94d5581f33e937dd9103e';
+  secret =  '8d9fb8d44daf4101ac80dbdf51f8b178';
+}
+
+
 
 var fitbit = require('../lib/fitbit.js')(key, secret)
 var async = require('async');
@@ -48,6 +57,8 @@ exports.dashboard = function(req, res){
           else
             streak = 0;
         }
+
+        console.log("process.env",process.env)
 
         res.render('dashboard', { title: 'Dashboard', averageCalories: average, streak: streak})
         }

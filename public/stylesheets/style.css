@@ -8,16 +8,16 @@ a {
 }
 	
 .streak, .calories {
-	width: 300px;
+	width: 350px;
 	text-align: center;
 	display: inline-block;
 }
 span.value {
-	font-size: 40px;
+	font-size: 50px;
 	font-weight: bold;
 }
 span.valueDescription {
-	font-size: 18px;
+	font-size: 20px;
 	color: gray;
 	display: block;
 }
