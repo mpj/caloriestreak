@@ -6,3 +6,18 @@ body {
 a {
   color: #00B7FF;
 }
+	
+.streak, .calories {
+	width: 300px;
+	text-align: center;
+	display: inline-block;
+}
+span.value {
+	font-size: 40px;
+	font-weight: bold;
+}
+span.valueDescription {
+	font-size: 18px;
+	color: gray;
+	display: block;
+}
