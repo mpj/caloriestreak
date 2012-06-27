@@ -32,13 +32,24 @@ exports.dashboard = function(req, res){
         function(callback, result) {
         var calories = result.calories;
         
-        var total = 0;
+        var total = 0, 
+            streak = 0,
+            average,
+            cals;
+
         for (var i=0;i<calories.length;i++) {
-          var c = calories[i];
-          total += parseInt(c.value);
+          cals = parseInt(calories[i].value);
+
+          total += cals;
+          average = Math.floor(total/calories.length);
+
+          if (cals > average)
+            streak++;
+          else
+            streak = 0;
         }
-        var average = Math.floor(total/calories.length);
-        res.render('dashboard', { title: 'Dashboard', averageCalories: average})
+
+        res.render('dashboard', { title: 'Dashboard', averageCalories: average, streak: streak})
         }
       ]
     },
