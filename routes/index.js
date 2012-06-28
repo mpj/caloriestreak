@@ -69,20 +69,20 @@ exports.dashboard = function(req, res){
           for (var i=0;i<calories.length;i++) {
 
             calDate = new Date(calories[i].dateTime);
-   
+            
             // Don't count days with incomplete data
             if (calDate.getTime() > lastValidDay.getTime())
-              continue;
+              break;
            
             cals = parseInt(calories[i].value);
-            
+
             if (cals > average)
               streak++;
             else
               streak = 0;
 
             total += cals;
-            average = Math.floor(total/calories.length);
+            average = Math.floor(total/i+1);
             
           }
 
