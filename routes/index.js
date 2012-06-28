@@ -37,30 +37,56 @@ exports.dashboard = function(req, res){
       steps:    function(cb) { 
         fitbitData(token, 'activities/steps', cb) }, 
 
-      render: [ 'calories', /*'weight',*/ 'steps' ,
+      lastSyncDate: function(cb) {
+        getDevices(token, function(err, devices) {
+          
+          if (err) return cb(err);
+
+          var lastSyncTime;
+          for(var i=0;i<devices.length;i++) {
+            if (devices[i].type === 'TRACKER') {
+              lastSyncTime = new Date(devices[i].lastSyncTime);
+              break;
+            }
+          }
+          cb(null, lastSyncTime);
+        })
+      },
+
+      render: [ 'calories', 'lastSyncDate', /*'weight',*/ 'steps' ,
         function(callback, result) {
-        var calories = result.calories;
-        
-        var total = 0, 
-            streak = 0,
-            average,
-            cals;
+          var calories = result.calories;
 
-        for (var i=0;i<calories.length;i++) {
-          cals = parseInt(calories[i].value);
+          var lastValidDay = flatDate(result.lastSyncDate)
+          lastValidDay.setDate(lastValidDay.getDate()-1);
 
-          total += cals;
-          average = Math.floor(total/calories.length);
+          var total = 0, 
+              streak = 0,
+              average = 0,
+              cals,
+              calDate;
 
-          if (cals > average)
-            streak++;
-          else
-            streak = 0;
-        }
+          for (var i=0;i<calories.length;i++) {
 
-        console.log("process.env",process.env)
+            calDate = new Date(calories[i].dateTime);
+   
+            // Don't count days with incomplete data
+            if (calDate.getTime() > lastValidDay.getTime())
+              continue;
+           
+            cals = parseInt(calories[i].value);
+            
+            if (cals > average)
+              streak++;
+            else
+              streak = 0;
 
-        res.render('dashboard', { title: 'Dashboard', averageCalories: average, streak: streak})
+            total += cals;
+            average = Math.floor(total/calories.length);
+            
+          }
+
+          res.render('dashboard', { title: 'Dashboard', averageCalories: average, streak: streak})
         }
       ]
     },
@@ -72,11 +98,34 @@ exports.dashboard = function(req, res){
   
 };
 
+function flatDate(date) {
+  var d= new Date(0,0,0,0,0,0,0)
+  d.setUTCFullYear(date.getUTCFullYear())
+  d.setUTCMonth(date.getUTCMonth())
+  d.setUTCDate(date.getUTCDate())
+  d.setUTCHours(0)
+  d.setUTCMinutes(0)
+  d.setUTCSeconds(0)
+  d.setUTCMilliseconds(0)
+  return d;
+}
+
 function currentDateFitbitString() {
   var now = new Date();
-  var month = now.getMonth().toString();
+  var month = (now.getMonth()+1).toString();
   if (month.length == 1) month = "0" + month;
   return now.getFullYear() + '-' +  month + '-' + now.getDate();
+}
+
+function getDevices(token, cb) {
+  var path = '/user/-/devices.json';
+  callFitbitAPI(token, path, function(err, data) {
+    if (err)cb(err)
+    else {
+      cb(null, data);
+    }
+
+  })
 }
 
 function fitbitData(token, dataPath, cb) {
