@@ -71,7 +71,7 @@ exports.dashboard = function(req, res){
             calDate = new Date(calories[i].dateTime);
             
             // Don't count days with incomplete data
-            if (calDate.getTime() > lastValidDay.getTime())
+            if (flatDate(calDate).getTime() > lastValidDay.getTime())
               break;
            
             cals = parseInt(calories[i].value);
