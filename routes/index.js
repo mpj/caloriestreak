@@ -112,9 +112,9 @@ function flatDate(date) {
 
 function currentDateFitbitString() {
   var now = new Date();
-  var month = (now.getMonth()+1).toString();
+  var month = (now.getUTCMonth()+1).toString();
   if (month.length == 1) month = "0" + month;
-  return now.getFullYear() + '-' +  month + '-' + now.getDate();
+  return now.getUTCFullYear() + '-' +  month + '-' + now.getUTCDate();
 }
 
 function getDevices(token, cb) {
