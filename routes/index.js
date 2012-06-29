@@ -63,6 +63,7 @@ exports.dashboard = function(req, res){
           var total = 0, 
               streak = 0,
               average = 0,
+              walkingDays = 0,
               cals,
               calDate;
 
@@ -76,13 +77,20 @@ exports.dashboard = function(req, res){
            
             stps = parseInt(steps[i].value);
 
+            if (stps === 0) // Dont average in days where we forgot the fitbit at home
+              continue;
+
+            console.log("steps", stps)
+
+            walkingDays++;
+
             if (stps > average)
               streak++;
             else
               streak = 0;
 
             total += stps;
-            average = Math.floor(total/i+1);
+            average = Math.floor(total/walkingDays);
             
           }
 
