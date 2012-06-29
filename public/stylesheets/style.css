@@ -7,7 +7,7 @@ a {
   color: #00B7FF;
 }
 	
-.streak, .calories {
+.streak, .steps {
 	width: 350px;
 	text-align: center;
 	display: inline-block;
