@@ -91,8 +91,13 @@ exports.dashboard = function(req, res){
       ]
     },
     function(err, result) {
-      if (err) throw err;
-      res.send("OK")
+      if (err)  {
+        console.warn("Failed connecting to FitBit. Clearing session.", err);
+        fitbit.logout(req);
+      } else {
+        res.send("OK")
+      }
+      
     })
   })
   
@@ -144,8 +149,6 @@ function fitbitData(token, dataPath, cb) {
 function callFitbitAPI(token, path, callback) {
   fitbit.get(path, token, function(err, data) {
     if (err) {
-      console.warn("Failed connecting to FitBit. Clearing session.", err);
-      fitbit.logout(req);
       callback(err, null)
     } else {
       callback(null, data);
