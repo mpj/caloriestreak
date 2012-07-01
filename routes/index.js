@@ -27,10 +27,10 @@ exports.dashboard = function(req, res){
 
     async.auto({
       
-      
+        /*
       calories: function(cb) { 
         fitbitData(token, 'activities/calories', cb) }, 
-      /*
+    
       weight:   function(cb) { 
         fitbitData(token, 'body/log/weight', cb) },
       */
@@ -53,9 +53,9 @@ exports.dashboard = function(req, res){
         })
       },
 
-      render: [ 'calories', 'lastSyncDate', /*'weight',*/ 'steps' ,
+      render: [ /*'calories',*/ 'lastSyncDate', /*'weight',*/ 'steps' ,
         function(callback, result) {
-          var calories = result.calories;
+          var steps = result.steps;
 
           var lastValidDay = flatDate(result.lastSyncDate)
           lastValidDay.setDate(lastValidDay.getDate()-1);
@@ -63,30 +63,38 @@ exports.dashboard = function(req, res){
           var total = 0, 
               streak = 0,
               average = 0,
+              walkingDays = 0,
               cals,
               calDate;
 
-          for (var i=0;i<calories.length;i++) {
+          for (var i=0;i<steps.length;i++) {
 
-            calDate = new Date(calories[i].dateTime);
+            calDate = new Date(steps[i].dateTime);
             
             // Don't count days with incomplete data
             if (flatDate(calDate).getTime() > lastValidDay.getTime())
               break;
            
-            cals = parseInt(calories[i].value);
+            stps = parseInt(steps[i].value);
 
-            if (cals > average)
+            if (stps === 0) // Dont average in days where we forgot the fitbit at home
+              continue;
+
+            console.log("steps", stps)
+
+            walkingDays++;
+
+            if (stps > average)
               streak++;
             else
               streak = 0;
 
-            total += cals;
-            average = Math.floor(total/i+1);
+            total += stps;
+            average = Math.floor(total/walkingDays);
             
           }
 
-          res.render('dashboard', { title: 'Dashboard', averageCalories: average, streak: streak})
+          res.render('dashboard', { title: 'Dashboard', averageSteps: average, streak: streak})
         }
       ]
     },
